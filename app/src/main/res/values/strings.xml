@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Muninn</string>
+    <string name="text_no_playlists">You don\'t have any playlists yet</string>
+    <string name="text_create_one">Do you want to create one ?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="text_cannot_explore_files">Cannot explore files without storage permissions</string>
+    <string name="text_snackbar_retry">Retry</string>
+    <string name="you_have_0_todo">You have 0 todo</string>
+    <string name="text_title_new_todo">New Todo</string>
+    <string name="text_btn_create_todo">Create</string>
+    <string name="text_btn_cancel_create_todo">Cancel</string>
+</resources>

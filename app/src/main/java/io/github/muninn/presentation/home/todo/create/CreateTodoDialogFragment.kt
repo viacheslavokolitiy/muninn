@@ -39,7 +39,7 @@ class CreateTodoDialogFragment : DialogFragment(), CreateTodoDialogContract.View
         presenter.onCreate(this)
         val builder = AlertDialog.Builder(activity)
         val inflater = LayoutInflater.from(activity)
-        with(builder){
+        with(builder) {
             setTitle(getString(R.string.text_title_new_todo))
             setPositiveButton(getString(R.string.text_btn_create_todo), { dialog, _ -> onPositiveButtonClick(dialog) })
             setNegativeButton(getString(R.string.text_btn_cancel_create_todo), { dialog, _ -> onNegativeButtonClick(dialog) })
@@ -64,7 +64,7 @@ class CreateTodoDialogFragment : DialogFragment(), CreateTodoDialogContract.View
         val dueDate = view?.findViewById<EditText>(R.id.edt_due_date)
 
         editStartDate!!.setOnTouchListener({ _, e -> onStartDateWasTouched(e) })
-        dueDate!!.setOnTouchListener({_, e -> onDueDateWasTouched(e)})
+        dueDate!!.setOnTouchListener({ _, e -> onDueDateWasTouched(e) })
 
         presenter.handleTextChanges(editTitle, editDescription, editStartDate, dueDate)
 
@@ -101,7 +101,7 @@ class CreateTodoDialogFragment : DialogFragment(), CreateTodoDialogContract.View
         val monthName = updatedCalendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.US)
         val yearName = year.toString()
         val builder = StringBuilder()
-        with(builder){
+        with(builder) {
             append(monthName)
             append(" ")
             append(dayName)
@@ -112,9 +112,10 @@ class CreateTodoDialogFragment : DialogFragment(), CreateTodoDialogContract.View
     }
 
     private fun onDueDateWasTouched(event: MotionEvent?): Boolean {
-        when(event!!.action){
+        when (event!!.action) {
             MotionEvent.ACTION_DOWN -> {
-                showDatePickerDialog({year, month, day -> onDueDateSet(year, month, day) })
+                showDatePickerDialog({ year, month, day -> onDueDateSet(year, month, day) }, presenter.minDate,
+                        null)
             }
         }
 
@@ -124,25 +125,29 @@ class CreateTodoDialogFragment : DialogFragment(), CreateTodoDialogContract.View
     private fun onStartDateWasTouched(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                showDatePickerDialog({year, month, day -> onStartDateSet(year, month, day) })
+                showDatePickerDialog({ year, month, day -> onStartDateSet(year, month, day) }, presenter.setCalendarDefaultMinDate(),
+                        presenter.maxDate)
             }
         }
         return false
     }
 
-    private fun showDatePickerDialog(dateSet: (Int, Int, Int) -> Unit) {
+    private fun showDatePickerDialog(dateSet: (Int, Int, Int) -> Unit, minDate: Calendar?, maxDate: Calendar?) {
         val calendar = presenter.prepareCalendar()
-        val dialog = DatePickerDialog.newInstance({_, year, monthOfYear, dayOfMonth ->
-            dateSet(year, monthOfYear, dayOfMonth) }, calendar)
+        val dialog = DatePickerDialog.newInstance({ _, year, monthOfYear, dayOfMonth ->
+            dateSet(year, monthOfYear, dayOfMonth)
+        }, calendar)
+        minDate?.let { dialog.minDate = minDate }
+        maxDate?.let { dialog.maxDate = maxDate }
         dialog.show(fragmentManager, "datePicker")
     }
 
-    private fun onDueDateSet(year: Int, monthOfYear: Int, dayOfMonth: Int){
-        presenter.saveTemporaryDueDateChoice(year, monthOfYear, dayOfMonth)
+    private fun onDueDateSet(year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        presenter.saveDueDateChoice(year, monthOfYear, dayOfMonth)
     }
 
     private fun onStartDateSet(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        presenter.saveTemporaryStartDateChoice(year, monthOfYear, dayOfMonth)
+        presenter.saveStartDateChoice(year, monthOfYear, dayOfMonth)
     }
 
     private fun onNegativeButtonClick(dialog: DialogInterface?) {
